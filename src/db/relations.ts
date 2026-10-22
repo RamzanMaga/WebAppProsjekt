@@ -1,23 +1,129 @@
-// Relations v2, som er måten Drizzle v1 gjør det på.
-//
-// Alle relasjoner defineres i ETT kall, ikke per tabell med `relations()` slik
-// det var i 0.x. `fields`/`references` heter nå `from`/`to`.
-//
-// Det er dette objektet som gjør at
-// `db.query.tasks.findFirst({ with: { user: true } })` virker. Det sendes til
-// `drizzle(..., { relations })` i ./index.ts.
 import { defineRelations } from "drizzle-orm";
 import * as schema from "./schema";
 
 export const relations = defineRelations(schema, (r) => ({
   users: {
-    // En bruker har mange oppgaver.
-    tasks: r.many.tasks({ from: r.users.id, to: r.tasks.userId }),
+    tasks: r.many.tasks({
+      from: r.users.id,
+      to: r.tasks.userId,
+    }),
+
+    building: r.one.buildings({
+      from: r.users.buildingId,
+      to: r.buildings.id,
+    }),
+
+    floor: r.one.floors({
+      from: r.users.floorId,
+      to: r.floors.id,
+    }),
+
+    bookings: r.many.bookings({
+      from: r.users.id,
+      to: r.bookings.userId,
+    }),
+
+    taskItems: r.many.taskItems({
+      from: r.users.id,
+      to: r.taskItems.userId,
+    }),
+
+    approvedTasks: r.many.tasks({
+      from: r.users.id,
+      to: r.tasks.approved,
+      alias: "approvedTasks",
+    }),
   },
+
   tasks: {
-    // En oppgave har én bruker. `optional: false` gjør den ikke-nullbar i typen.
     user: r.one.users({
       from: r.tasks.userId,
+      to: r.users.id,
+      optional: false,
+    }),
+
+    floor: r.one.floors({
+      from: r.tasks.floorId,
+      to: r.floors.id,
+    }),
+
+    approvedBy: r.one.users({
+      from: r.tasks.approved,
+      to: r.users.id,
+      alias: "approvedTasks",
+    }),
+
+    items: r.many.taskItems({
+      from: r.tasks.id,
+      to: r.taskItems.taskId,
+    }),
+  },
+
+  buildings: {
+    floors: r.many.floors({
+      from: r.buildings.id,
+      to: r.floors.buildingId,
+    }),
+
+    users: r.many.users({
+      from: r.buildings.id,
+      to: r.users.buildingId,
+    }),
+
+    bookings: r.many.bookings({
+      from: r.buildings.id,
+      to: r.bookings.buildingId,
+    }),
+  },
+
+  floors: {
+    building: r.one.buildings({
+      from: r.floors.buildingId,
+      to: r.buildings.id,
+      optional: false,
+    }),
+
+    users: r.many.users({
+      from: r.floors.id,
+      to: r.users.floorId,
+    }),
+
+    tasks: r.many.tasks({
+      from: r.floors.id,
+      to: r.tasks.floorId,
+    }),
+  },
+
+  bookings: {
+    user: r.one.users({
+      from: r.bookings.userId,
+      to: r.users.id,
+      optional: false,
+    }),
+
+    building: r.one.buildings({
+      from: r.bookings.buildingId,
+      to: r.buildings.id,
+      optional: false,
+    }),
+  },
+
+  taskItems: {
+    task: r.one.tasks({
+      from: r.taskItems.taskId,
+      to: r.tasks.id,
+      optional: false,
+    }),
+
+    user: r.one.users({
+      from: r.taskItems.userId,
+      to: r.users.id,
+    }),
+  },
+
+  sessions: {
+    user: r.one.users({
+      from: r.sessions.userId,
       to: r.users.id,
       optional: false,
     }),

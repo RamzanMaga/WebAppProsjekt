@@ -1,14 +1,19 @@
 import { sqliteTable, text, int } from "drizzle-orm/sqlite-core";
+import { floors } from "./floor-schema";
+import { buildings } from "./building-schema";
 
-/**
- * Eksempeltabell. Bytt den ut med deres egen datamodell.
- */
 export const users = sqliteTable("users", {
   id: int().primaryKey({ autoIncrement: true }),
   name: text().notNull(),
   email: text().notNull().unique(),
+  firstName: text("first_name"),
+  lastName: text("last_name"),
+  passwordHash: text("password_hash"),
+
+  role: text("role").notNull().default("student"),
+  buildingId: int("building_id").references(() => buildings.id),
+  floorId: int("floor_id").references(() => floors.id),
 });
 
-// Typen utledes FRA tabellen, så den kan aldri komme i utakt med skjemaet.
 export type User = typeof users.$inferSelect;
 export type CreateUser = typeof users.$inferInsert;
