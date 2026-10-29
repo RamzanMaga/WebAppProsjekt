@@ -67,6 +67,8 @@ export function RegisterForm({ onBack }: { onBack: () => void }) {
     setSuccess("Brukeren er opprettet! Gå tilbake og logg inn.");
     (event.target as HTMLFormElement).reset();
     setBuildingId("");
+
+    onBack();
   }
 
   return (

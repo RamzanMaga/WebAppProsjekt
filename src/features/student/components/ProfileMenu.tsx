@@ -1,11 +1,7 @@
-
 "use client";
 
 import { useState } from "react";
-import {
-  logoutUser,
-  changePassword,
-} from "@/features/Auth/auth-api";
+import { logoutUser, changePassword } from "@/features/Auth/auth-api";
 
 export function ProfileMenu() {
   const [page, setPage] = useState("menu");
@@ -62,7 +58,6 @@ export function ProfileMenu() {
       </summary>
 
       <div className="absolute right-0 z-20 mt-2 w-72 rounded-xl border bg-white p-4 shadow-lg">
-
         {page === "menu" ? (
           <div className="space-y-2">
             <h3 className="font-semibold">Min profil</h3>
@@ -75,7 +70,7 @@ export function ProfileMenu() {
               }}
               className="w-full rounded-lg p-2 text-left hover:bg-slate-100"
             >
-              Endre profil
+              Bytt passord
             </button>
 
             <button
@@ -107,7 +102,7 @@ export function ProfileMenu() {
               aria-label="Gammelt passord"
               autoComplete="current-password"
               value={oldPassword}
-              onChange={e => setOldPassword(e.target.value)}
+              onChange={(e) => setOldPassword(e.target.value)}
               required
               className="w-full rounded-lg border p-2"
             />
@@ -118,7 +113,7 @@ export function ProfileMenu() {
               aria-label="Nytt passord"
               autoComplete="new-password"
               value={newPassword}
-              onChange={e => setNewPassword(e.target.value)}
+              onChange={(e) => setNewPassword(e.target.value)}
               minLength={8}
               required
               className="w-full rounded-lg border p-2"
@@ -130,7 +125,7 @@ export function ProfileMenu() {
               aria-label="Bekreft nytt passord"
               autoComplete="new-password"
               value={confirmPassword}
-              onChange={e => setConfirmPassword(e.target.value)}
+              onChange={(e) => setConfirmPassword(e.target.value)}
               required
               className="w-full rounded-lg border p-2"
             />
