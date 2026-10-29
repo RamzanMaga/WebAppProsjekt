@@ -1,5 +1,5 @@
 "use client";
-import type { Result } from "@/features/auth/auth-api";
+import type { Result } from "@/features/Auth/auth-api";
 
 export type FloorGroup = {
   building: string;

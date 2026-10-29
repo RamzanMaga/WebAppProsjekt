@@ -1,4 +1,4 @@
-import { service as authService } from "@/features/auth/auth-service";
+import { service as authService } from "@/features/Auth/auth-service";
 import { studentRepository } from "./student-repository";
 
 export async function getMyFloorGroup(token: string | null) {

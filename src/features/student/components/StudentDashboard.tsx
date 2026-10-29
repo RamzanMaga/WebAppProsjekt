@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { TaskBoard } from "@/features/tasks/components/TaskBoard";
-import { logoutUser } from "@/features/auth/auth-api";
+import { logoutUser } from "@/features/Auth/auth-api";
 import { getMyFloorGroup, type FloorGroup } from "../student-api";
 
 export function StudentDashboard() {

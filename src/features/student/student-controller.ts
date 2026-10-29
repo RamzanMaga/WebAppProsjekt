@@ -1,4 +1,4 @@
-import { cookieToken } from "@/features/auth/auth-controller";
+import { cookieToken } from "@/features/Auth/auth-controller";
 import { getMyFloorGroup } from "./student-service";
 
 export const studentController = {

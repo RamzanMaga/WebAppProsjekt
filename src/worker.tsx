@@ -5,14 +5,16 @@ import { setCommonHeaders } from "@/app/headers";
 import { Home } from "@/app/pages/Home";
 import { authRoutes } from "@/features/Auth//auth-routes";
 import { taskRoutes } from "@/features/tasks/task-routes";
+import { studentRoutes } from "@/features/student/student-routes";
+import { StudentPage } from "@/features/student/pages/StudentPage";
 
 export type AppContext = {};
 const app = defineApp([
   setCommonHeaders(),
   ...authRoutes,
-
+  ...studentRoutes,
   ...taskRoutes,
   route("/api/status", () => Response.json({ status: "ok", version: "0.1.0" })),
-  render(Document, [route("/", Home)]),
+  render(Document, [route("/", Home), route("/student", StudentPage)]),
 ]);
 export default { fetch: app.fetch };
