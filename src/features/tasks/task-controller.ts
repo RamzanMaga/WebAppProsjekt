@@ -1,5 +1,5 @@
-import { cookieToken } from "../auth/auth-controller";
-import { service as authService } from "../auth/auth-service";
+import { cookieToken } from "../Auth/auth-controller";
+import { service as authService } from "../Auth/auth-service";
 import * as service from "./task-service";
 
 function errorResponse(error: unknown) {

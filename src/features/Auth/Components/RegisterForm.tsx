@@ -4,15 +4,13 @@
 "use client";
 
 import { useEffect, useState, type FormEvent } from "react";
-import { getLocations, registerUser, type LocationData } 
-from "../auth-api";
+import { getLocations, registerUser, type LocationData } from "../auth-api";
 import { InputField } from "./InputField";
 
-export function RegisterForm({ onBack }: { onBack: () => void }) 
-{
-  const [locations, setLocations] = useState<LocationData>({ 
-    buildings: [], 
-    floors: [] 
+export function RegisterForm({ onBack }: { onBack: () => void }) {
+  const [locations, setLocations] = useState<LocationData>({
+    buildings: [],
+    floors: [],
   });
 
   const [buildingId, setBuildingId] = useState("");
@@ -23,25 +21,24 @@ export function RegisterForm({ onBack }: { onBack: () => void })
   useEffect(() => {
     let active = true;
 
-    getLocations().then(result => {
+    getLocations().then((result) => {
       if (!active) return;
 
-      if (result.ok) 
-        setLocations(result.data);
+      if (result.ok) setLocations(result.data);
       else setError(result.error.message);
     });
-    
+
     return () => {
-       active = false;
-       };
+      active = false;
+    };
   }, []);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault(); 
-    
+    event.preventDefault();
+
     setError("");
-     setSuccess("");
-      setPending(true);
+    setSuccess("");
+    setPending(true);
 
     const data = new FormData(event.currentTarget);
 
@@ -58,138 +55,140 @@ export function RegisterForm({ onBack }: { onBack: () => void })
     setPending(false);
 
     if (!result.ok) {
-       setError(
-        result.error.message + 
-        (result.error.fieldErrors
-           ? ": " + 
-           Object.values(result.error.fieldErrors).flat().join(", ")
-            : "")
-          );
-           return;
-           }
+      setError(
+        result.error.message +
+          (result.error.fieldErrors
+            ? ": " + Object.values(result.error.fieldErrors).flat().join(", ")
+            : ""),
+      );
+      return;
+    }
 
     setSuccess("Brukeren er opprettet! Gå tilbake og logg inn.");
     (event.target as HTMLFormElement).reset();
-     setBuildingId("");
+    setBuildingId("");
   }
 
   return (
-  <div className="w-full max-w-lg rounded-2xl bg-white p-7 
-  shadow-xl ring-1 ring-slate-200 sm:p-8">
-    <h1 className="text-center text-3xl font-bold text-slate-900">G
-      ruppe: W-08
+    <div
+      className="w-full max-w-lg rounded-2xl bg-white p-7 
+  shadow-xl ring-1 ring-slate-200 sm:p-8"
+    >
+      <h1 className="text-center text-3xl font-bold text-slate-900">
+        G ruppe: W-08
       </h1>
 
-    <p className="mt-2 text-center text-slate-500">
-      Opprett en ny brukerkonto
+      <p className="mt-2 text-center text-slate-500">
+        Opprett en ny brukerkonto
       </p>
 
-    <form onSubmit={submit} 
-    className="mt-6 space-y-4">
+      <form onSubmit={submit} className="mt-6 space-y-4">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <InputField
+            label="Fornavn"
+            name="firstName"
+            autoComplete="given-name"
+            placeholder="Fornavn"
+          />
 
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <InputField
+            label="Etternavn"
+            name="lastName"
+            autoComplete="family-name"
+            placeholder="Etternavn"
+          />
+        </div>
 
-        <InputField 
-        label="Fornavn" 
-        name="firstName" 
-        autoComplete="given-name" 
-        placeholder="Fornavn" />
-
-        <InputField 
-        label="Etternavn" 
-        name="lastName" 
-        autoComplete="family-name" 
-        placeholder="Etternavn" 
+        <InputField
+          label="E-post"
+          name="email"
+          type="email"
+          autoComplete="email"
+          placeholder="din@epost.no"
         />
-      </div>
 
-      <InputField 
-      label="E-post"
-      name="email" 
-      type="email" 
-      autoComplete="email" 
-      placeholder="din@epost.no"
-      />
+        <InputField
+          label="Passord (minst 8 tegn)"
+          name="password"
+          type="password"
+          minLength={8}
+          autoComplete="new-password"
+        />
 
-      <InputField 
-      label="Passord (minst 8 tegn)" 
-      name="password" 
-      type="password" 
-      minLength={8} 
-      autoComplete="new-password" 
-      />
+        <InputField
+          label="Bekreft passord"
+          name="confirmPassword"
+          type="password"
+          autoComplete="new-password"
+        />
 
-      <InputField 
-      label="Bekreft passord" 
-      name="confirmPassword" 
-      type="password" 
-      autoComplete="new-password" 
-      />
+        <label className="block text-sm font-medium text-slate-700">
+          Bygning
+          <select
+            name="buildingId"
+            required
+            value={buildingId}
+            onChange={(e) => setBuildingId(e.target.value)}
+            className="mt-1.5 block w-full rounded-lg border border-slate-300 bg-white p-3"
+          >
+            <option value="">Velg bygning</option>
 
-      <label className="block text-sm font-medium text-slate-700">
-        Bygning
-
-        <select 
-        name="buildingId"
-         required 
-         value={buildingId} 
-         onChange={e => setBuildingId(e.target.value)}
-          className="mt-1.5 block w-full rounded-lg border border-slate-300 bg-white p-3">
-          <option value="">Velg bygning</option>
-
-          {locations.buildings.map(b => (
-            <option key={b.id} value={b.id}>
-              {b.name}
+            {locations.buildings.map((b) => (
+              <option key={b.id} value={b.id}>
+                {b.name}
               </option>
             ))}
-        </select>
-      </label>
+          </select>
+        </label>
 
-      <label className="block text-sm font-medium text-slate-700">
-        Etasje
+        <label className="block text-sm font-medium text-slate-700">
+          Etasje
+          <select
+            key={buildingId}
+            name="floorId"
+            required
+            disabled={!buildingId}
+            defaultValue=""
+            className="mt-1.5 block w-full rounded-lg border border-slate-300 bg-white p-3 disabled:opacity-50"
+          >
+            <option value="">Velg etasje</option>
 
-        <select 
-        key={buildingId} 
-        name="floorId" 
-        required 
-        disabled={!buildingId} 
-        defaultValue="" 
-        className="mt-1.5 block w-full rounded-lg border border-slate-300 bg-white p-3 disabled:opacity-50">
-          
-          <option value="">Velg etasje</option>
-
-          {locations.floors.filter
-          (f => f.buildingId === Number(buildingId))
-          .map(f => (
-             <option key={f.id}>
-               value={f.id} Etasje
-                {f.number}
+            {locations.floors
+              .filter((f) => f.buildingId === Number(buildingId))
+              .map((f) => (
+                <option key={f.id} value={f.id}>
+                  Etasje
+                  {f.number}
                 </option>
               ))}
-        </select>
-      </label>
+          </select>
+        </label>
 
-      {error && (
-        <p role="alert" className="text-sm text-red-600">
-          {error}
+        {error && (
+          <p role="alert" className="text-sm text-red-600">
+            {error}
           </p>
         )}
 
-      {success && (
-         <p role="status" className="text-sm text-green-700">
-          {success}
+        {success && (
+          <p role="status" className="text-sm text-green-700">
+            {success}
           </p>
-          )}
+        )}
 
-      <button disabled={pending || !!success}
-       className="w-full rounded-lg bg-blue-600 px-4 py-3 font-semibold text-white hover:bg-blue-700 disabled:opacity-50">
-        {pending ? "Registrerer…" : "Registrer bruker"}
+        <button
+          disabled={pending || !!success}
+          className="w-full rounded-lg bg-blue-600 px-4 py-3 font-semibold text-white hover:bg-blue-700 disabled:opacity-50"
+        >
+          {pending ? "Registrerer…" : "Registrer bruker"}
         </button>
-    </form>
-    <button onClick={onBack} 
-    className="mt-3 w-full rounded-lg border border-slate-300 px-4 py-3 font-semibold hover:bg-slate-50">
-      Tilbake til innlogging
+      </form>
+      <button
+        onClick={onBack}
+        className="mt-3 w-full rounded-lg border border-slate-300 px-4 py-3 font-semibold hover:bg-slate-50"
+      >
+        Tilbake til innlogging
       </button>
-  </div>
+    </div>
   );
 }
