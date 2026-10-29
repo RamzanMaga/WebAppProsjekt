@@ -1,6 +1,11 @@
+//Repository for å håndtere autentisering og autorisering av brukere. Dette inkluderer 
+//funksjoner for å finne brukere etter e-post, hente lokasjoner (bygninger og etasjer), 
+//sjekke om en etasje tilhører en bygning, opprette nye brukere, lagre sesjoner, 
+//hente brukere for en gitt sesjon, oppdatere passord og slette sesjoner.
 import { eq, and } from "drizzle-orm";
 import { db } from "@/db";
 import { users, buildings, floors, sessions } from "@/db/schema";
+
 export function createAuthRepository(database: typeof db) {
   return {
     async findByEmail(email: string) {
