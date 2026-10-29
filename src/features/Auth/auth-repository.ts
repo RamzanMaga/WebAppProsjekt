@@ -67,6 +67,12 @@ export function createAuthRepository(database: typeof db) {
         .limit(1);
       return user ?? null;
     },
+  async updatePassword(userId: number, passwordHash: string) {
+    await database
+      .update(users)
+      .set({ passwordHash })
+      .where(eq(users.id, userId));
+    },
     async deleteSession(hash: string) {
       await database.delete(sessions).where(eq(sessions.tokenHash, hash));
     },

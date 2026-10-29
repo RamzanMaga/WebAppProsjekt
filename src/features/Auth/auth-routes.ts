@@ -6,4 +6,5 @@ export const authRoutes = [
   route("/api/v1/auth/login", { post: controller.login }),
   route("/api/v1/auth/me", { get: controller.me }),
   route("/api/v1/auth/logout", { post: controller.logout }),
+  route("/api/v1/auth/change-password", { post: controller.changePassword,}),
 ];

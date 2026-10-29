@@ -1,3 +1,4 @@
+
 import { registerSchema, loginSchema } from "./auth-schema";
 import {
   hashPassword,
@@ -7,7 +8,10 @@ import {
 } from "./auth-crypto";
 import { toUserDTO } from "./auth-mapper";
 import { repository } from "./auth-repository";
+import { changePasswordSchema } from "./auth-schema";
+
 const SESSION_DURATION = 60 * 60 * 24 * 7;
+
 type Failure = {
   ok: false;
   error: {
@@ -16,11 +20,13 @@ type Failure = {
     fieldErrors?: Record<string, string[]>;
   };
 };
+
 const fail = (
   code: Failure["error"]["code"],
   message: string,
   fieldErrors?: Record<string, string[]>,
 ): Failure => ({ ok: false, error: { code, message, fieldErrors } });
+
 export function createAuthService(repo: typeof repository) {
   return {
     async locations() {
@@ -106,6 +112,46 @@ export function createAuthService(repo: typeof repository) {
       }
       return { ok: true as const, data: null };
     },
+    async changePassword(token: string | null, input: unknown) {
+      if (!token || !/^[0-9a-f]{64}$/.test(token)) {
+        return fail("401", "Du må være innlogget");
+      }
+
+      const parsed = changePasswordSchema.safeParse(input);
+
+      if (!parsed.success) {
+        return fail("400", "Sjekk passordfeltene");
+      }
+
+      try {
+        const user = await repo.userForSession(
+          await tokenHash(token),
+          Math.floor(Date.now() / 1000)
+        );
+
+        if (!user) {
+          return fail("401", "Økten er utløpt");
+        }
+
+        const correctPassword = await verifyPassword(
+          parsed.data.oldPassword,
+          user.passwordHash
+        );
+
+        if (!correctPassword) {
+          return fail("400", "Gammelt passord er feil");
+        }
+
+        const newHash = await hashPassword(parsed.data.newPassword);
+
+        await repo.updatePassword(user.id, newHash);
+
+        return { ok: true as const, data: null };
+      } catch {
+        return fail("500", "Kunne ikke endre passordet");
+      }
+    },
   };
 }
+
 export const service = createAuthService(repository);

@@ -59,6 +59,13 @@ export const controller = {
     return respond(await service.me(cookieToken(request)));
   },
 
+  async changePassword({ request }: { request: Request }) {
+    const token = cookieToken(request);
+    const data = await readJson(request);
+
+    return respond(await service.changePassword(token, data));
+},
+
   async logout({ request }: { request: Request }) {
     const result = await service.logout(cookieToken(request));
     const response = respond(result);

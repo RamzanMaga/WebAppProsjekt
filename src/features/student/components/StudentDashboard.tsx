@@ -1,14 +1,14 @@
+
 "use client";
 import { useEffect, useState } from "react";
 import { TaskBoard } from "@/features/tasks/components/TaskBoard";
-import { logoutUser } from "@/features/Auth/auth-api";
+import { ProfileMenu } from "./ProfileMenu";
 import { getMyFloorGroup, type FloorGroup } from "../student-api";
 
 export function StudentDashboard() {
   const [group, setGroup] = useState<FloorGroup | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [loggingOut, setLoggingOut] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -24,16 +24,6 @@ export function StudentDashboard() {
     };
   }, []);
 
-  async function signOut() {
-    setLoggingOut(true);
-    const result = await logoutUser();
-    if (result.ok) window.location.replace("/");
-    else {
-      setError(result.error.message);
-      setLoggingOut(false);
-    }
-  }
-
   return (
     <main className="min-h-screen bg-slate-100 px-4 py-8 font-sans">
       <div className="mx-auto max-w-4xl">
@@ -44,14 +34,7 @@ export function StudentDashboard() {
               Min etasjegruppe
             </h1>
           </div>
-          <button
-            type="button"
-            disabled={loggingOut}
-            onClick={signOut}
-            className="rounded-lg border border-slate-300 bg-white px-4 py-2 font-medium hover:bg-slate-50 disabled:opacity-50"
-          >
-            {loggingOut ? "Logger ut…" : "Logg ut"}
-          </button>
+          <ProfileMenu />
         </header>
         {loading && (
           <p role="status" className="rounded-xl bg-white p-6">

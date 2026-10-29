@@ -75,3 +75,10 @@ export const getCurrentUser = () =>
 //Sender en post request til API-et for å logge ut brukeren. Returnerer en Result<null> som inneholder en suksessmelding hvis utloggingen var vellykket, eller en feilmelding hvis det oppstod en feil.
 export const logoutUser = () => 
     request<null>("logout", { method: "POST" });
+
+//Sender gammelt passord, nytt passord og bekreftelse av nytt passord til API-et for å endre brukerens passord
+export const changePassword = (data: {
+  oldPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+}) => request<null>("change-password", jsonPost(data));
