@@ -6,3 +6,4 @@ export * from "./booking-schema";
 export * from "./task-schema";
 export * from "./task-items-schema";
 export * from "./task-plan-schema";
+export * from "./ansatt-review-schema";

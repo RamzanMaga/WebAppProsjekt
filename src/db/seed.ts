@@ -1,8 +1,9 @@
-
 import { defineScript } from "rwsdk/worker";
 import { drizzle } from "drizzle-orm/d1";
 import { eq, and } from "drizzle-orm";
 import { buildings, floors } from "./schema";
+import { users } from "./schema";
+import { hashPassword } from "../features/Auth/auth-crypto";
 
 const buildingsData = [
   {
@@ -23,10 +24,7 @@ const buildingsData = [
   },
   {
     name: "Tårnet",
-    floors: Array.from(
-      { length: 16 },
-      (_, index) => index + 1
-    ),
+    floors: Array.from({ length: 16 }, (_, index) => index + 1),
   },
   {
     name: "Stadion",
@@ -51,9 +49,7 @@ export default defineScript(async ({ env }) => {
       .where(eq(buildings.name, buildingData.name));
 
     if (!building) {
-      throw new Error(
-        `Kunne ikke finne ${buildingData.name}`
-      );
+      throw new Error(`Kunne ikke finne ${buildingData.name}`);
     }
 
     for (const floorNumber of buildingData.floors) {
@@ -63,8 +59,8 @@ export default defineScript(async ({ env }) => {
         .where(
           and(
             eq(floors.buildingId, building.id),
-            eq(floors.number, floorNumber)
-          )
+            eq(floors.number, floorNumber),
+          ),
         );
 
       if (!existingFloor) {
@@ -75,9 +71,54 @@ export default defineScript(async ({ env }) => {
       }
     }
 
-    console.log(
-      `${buildingData.name}: ${buildingData.floors.length} etasjer`
-    );
+    console.log(`${buildingData.name}: ${buildingData.floors.length} etasjer`);
+  }
+
+  // Opprett ansatt
+  const email = "ansatt@test.no";
+
+  const [existingUser] = await db
+    .select()
+    .from(users)
+    .where(eq(users.email, email));
+
+  if (!existingUser) {
+    const [building] = await db
+      .select()
+      .from(buildings)
+      .where(eq(buildings.name, "Bygg A"));
+
+    if (!building) {
+      throw new Error("Bygg A finnes ikke");
+    }
+
+    const [floor] = await db
+      .select()
+      .from(floors)
+      .where(and(eq(floors.buildingId, building.id), eq(floors.number, 1)));
+
+    if (!floor) {
+      throw new Error("Etasje 1 finnes ikke");
+    }
+
+    const password = "ansatt123";
+
+    if (!password || password.length < 8) {
+      throw new Error("SEED_ANSATT_PASSWORD må være minst 8 tegn");
+    }
+
+    await db.insert(users).values({
+      name: "Test Ansatt",
+      firstName: "Test",
+      lastName: "Ansatt",
+      email,
+      passwordHash: await hashPassword(password),
+      role: "ansatt",
+      buildingId: building.id,
+      floorId: floor.id,
+    });
+
+    console.log("Testansatt opprettet");
   }
 
   return Response.json({
