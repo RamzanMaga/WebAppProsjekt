@@ -50,13 +50,12 @@ try {
     },
   );
 
-  console.log("\nAnsatt testkonto hazır!");
+  console.log("\nAnsatt konto er klar");
   console.log(`E-post: ${EMAIL}`);
   console.log(`Passord: ${PASSWORD}`);
 } finally {
   try {
     unlinkSync(sqlFile);
   } catch {
-    // Geçici dosya zaten silinmiş olabilir.
   }
 }
