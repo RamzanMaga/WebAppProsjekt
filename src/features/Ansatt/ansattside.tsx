@@ -6,6 +6,8 @@
 "use client";
 
 import { useState } from "react";
+import { ProfileMenu } from "@/features/student/components/ProfileMenu";
+
 // Definerer antall etasjer for hver bygning
 const buildings: Record<string, number> = {
   "Bygg A": 4,
@@ -103,9 +105,7 @@ export function AnsattSide() {
               Gjennomgå og vurder studentenes ukentlige vaskerapporter.
             </p>
           </div>
-          <span className="rounded-full bg-blue-100 px-4 py-2 text-sm font-semibold text-blue-800">
-            Ansatt
-          </span>
+          <ProfileMenu /> 
         </header>
 
         <section className="mb-6 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
@@ -146,20 +146,17 @@ export function AnsattSide() {
                 ))}
               </select>
             </label>
+          </div>
+        </section>
 
-            <label className="block text-sm font-medium">
-              Gruppe
-              <select
-                value={group}
-                onChange={(e) => changeGroup(e.target.value)}
-                className="mt-2 w-full rounded-lg border border-slate-300 bg-white p-3"
-              >
-                {["Gruppe 1", "Gruppe 2", "Gruppe 3"].map((name) => (
-                  <option key={name} value={name}>{name}</option>
-                ))}
-              </select>
-            </label>
-
+        <section className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <h2 className="text-xl font-bold">Ukentlig vaskerapport</h2>
+              <p className="mt-1 text-sm text-slate-500">
+                {building} · Etasje {floor} · Uke {week}
+              </p>
+            </div>
             <label className="block text-sm font-medium">
               Uke
               <select
@@ -176,27 +173,7 @@ export function AnsattSide() {
                 )}
               </select>
             </label>
-          </div>
-        </section>
 
-        <section className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
-          <div className="flex flex-wrap items-start justify-between gap-3">
-            <div>
-              <h2 className="text-xl font-bold">Ukentlig vaskerapport</h2>
-              <p className="mt-1 text-sm text-slate-500">
-                {building} · Etasje {floor} · {group} · Uke {week}
-              </p>
-            </div>
-
-            {decision && (
-              <span className={`rounded-full px-3 py-1 text-sm font-semibold ${
-                decision === "Godkjent"
-                  ? "bg-green-100 text-green-800"
-                  : "bg-red-100 text-red-800"
-              }`}>
-                {decision}
-              </span>
-            )}
           </div>
 
           <div className="mt-6 space-y-3">
@@ -230,6 +207,8 @@ export function AnsattSide() {
       {checks[index] ? "Utført" : "Ikke utført"}
     </span>
   </label>
+
+  
 ))}
           </div>
 
@@ -246,28 +225,35 @@ export function AnsattSide() {
             </label>
           </div>
 
-          <div className="mt-6 flex flex-wrap gap-3">
-            <button
-              type="button"
-              onClick={() => reviewReport("Godkjent")}
-              className="rounded-lg bg-green-700 px-5 py-3 font-semibold text-white hover:bg-green-800"
-            >
-              Godkjenn rapport
-            </button>
+                    <div className="mt-6 flex items-center justify-between gap-3">
+            <div className="flex flex-wrap gap-3">
+              <button
+                type="button"
+                onClick={() => reviewReport("Godkjent")}
+                className="rounded-lg bg-green-700 px-5 py-3 font-semibold text-white hover:bg-green-800"
+              >
+                Godkjenn rapport
+              </button>
 
-            <button
-              type="button"
-              onClick={() => reviewReport("Avvist")}
-              className="rounded-lg bg-red-700 px-5 py-3 font-semibold text-white hover:bg-red-800"
-            >
-              Avvis rapport
-            </button>
+              <button
+                type="button"
+                onClick={() => reviewReport("Avvist")}
+                className="rounded-lg bg-red-700 px-5 py-3 font-semibold text-white hover:bg-red-800"
+              >
+                Avvis rapport
+              </button>
+            </div>
+
+            {decision && (
+              <span className={`rounded-full px-3 py-1 text-sm font-semibold ${
+                decision === "Godkjent"
+                  ? "bg-green-100 text-green-800"
+                  : "bg-red-100 text-red-800"
+              }`}>
+                {decision}
+              </span>
+            )}
           </div>
-
-          <p className="mt-4 text-xs text-slate-500">
-            Simulering: Endringer lagres bare i sidens lokale tilstand.
-            Ingenting sendes til databasen.
-          </p>
         </section>
       </div>
     </main>
