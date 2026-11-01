@@ -35,7 +35,7 @@
     {
       "binding": "DB",
       "database_name": "webapp-db",
-      "database_id": "__change_me__",
+      "database_id": "c7148671-ea56-4a8c-81d5-1207e131de9c",
       "migrations_dir": "drizzle/migrations",
       // Drizzle v1 legger hver migrasjon i sin egen mappe. Uten dette
       // mønsteret finner wrangler ingenting, og sier «No migrations to apply».

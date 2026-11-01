@@ -34,7 +34,7 @@ async function derive( // Funksjon for å derivere en hash fra et passord og en 
       name: "PBKDF2", //PBKDF2 (Password-Based Key Derivation Function 2) er en kryptografisk algoritme som brukes til å derivere en sikker nøkkel fra et passord. Den bruker en saltverdi og et antall iterasjoner for å gjøre det vanskeligere for angripere å brute-force passordet.
       hash: "SHA-256", //SHA-256 (Secure Hash Algorithm 256-bit) er en kryptografisk hashfunksjon som produserer en 256-bits (32-byte) hashverdi. Den brukes i PBKDF2-algoritmen for å sikre at passordet hashet på en sikker måte.
       salt: new Uint8Array(salt), 
-      iterations: 310000 // Antall iterasjoner for PBKDF2-algoritmen, som gjør det vanskeligere for angripere å brute-force passordet. det er 310 000 fordi det er en god balanse mellom sikkerhet og ytelse, og det er anbefalt av NIST (National Institute of Standards and Technology) for passordhashing. 
+      iterations: 100000 // Antall iterasjoner for PBKDF2-algoritmen, som gjør det vanskeligere for angripere å brute-force passordet. det er 310 000 fordi det er en god balanse mellom sikkerhet og ytelse, og det er anbefalt av NIST (National Institute of Standards and Technology) for passordhashing. 
     }, 
       key, 256 // Lengden på den resulterende hashen i biter (256 biter = 32 byte)
     );
@@ -44,7 +44,7 @@ async function derive( // Funksjon for å derivere en hash fra et passord og en 
 export async function hashPassword(password: string) { 
   const salt = crypto.getRandomValues(new Uint8Array(16));
 
-  return `pbkdf2-sha256:310000:${toHex(salt)}:${await //returnerer en streng som inneholder algoritmen som brukes (pbkdf2-sha256), antall iterasjoner (310000), saltverdien i hex-format og den resulterende hashen av passordet. Dette formatet gjør det enkelt å lagre og verifisere passordet senere.
+  return `pbkdf2-sha256:100000:${toHex(salt)}:${await //returnerer en streng som inneholder algoritmen som brukes (pbkdf2-sha256), antall iterasjoner (310000), saltverdien i hex-format og den resulterende hashen av passordet. Dette formatet gjør det enkelt å lagre og verifisere passordet senere.
 derive(password, salt)}`;
 }
 
@@ -60,7 +60,7 @@ export async function verifyPassword( // Funksjon for å verifisere om et gitt p
   if ( //Sjekker om den lagrede hashen har riktig format og inneholder de nødvendige delene (algoritme, iterasjoner, salt og hash). Hvis ikke, returneres false.
     parts.length !== 4 || 
     parts[0] !== "pbkdf2-sha256" || 
-    parts[1] !== "310000" ||
+    parts[1] !== "100000" ||
      !/^[0-9a-f]{32}$/.test(parts[2]) || //sjekker om saltverdien er en gyldig hex-streng med 32 tegn (16 byte) og om hashen er en gyldig hex-streng med 64 tegn (32 byte). Hvis ikke, returneres false.
      !/^[0-9a-f]{64}$/.test(parts[3])
     ){ 

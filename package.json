@@ -10,7 +10,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "release": "npm run clean && npm run build && wrangler deploy",
-    "clean": "rm -rf ./node_modules/.vite",
+    "clean": "node -e \"fs.rmSync('./node_modules/.vite',{recursive:true,force:true})\"",
     "generate": "wrangler types",
     "lint": "tsc --noEmit",
     "worker:run": "rwsdk worker-run",

@@ -85,9 +85,12 @@ export function createAuthService(repo: typeof repository) {
           Math.floor(Date.now() / 1000) + SESSION_DURATION,
         );
         return { ok: true as const, data: { user: toUserDTO(user), token } };
-      } catch {
-        return fail("500", "Innlogging mislyktes. Prøv igjen.");
-      }
+      } catch (error) {
+  const detail =
+    error instanceof Error ? `${error.name}: ${error.message}` : String(error);
+  console.error("login failed:", detail);
+  return fail("500", "Innlogging mislyktes. Prøv igjen.");
+}
     },
     async me(token: string | null) {
       if (!token || !/^[0-9a-f]{64}$/.test(token))

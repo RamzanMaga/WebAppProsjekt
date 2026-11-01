@@ -7,9 +7,9 @@ const EMAIL = "ansatt@gmail.com";
 const PASSWORD = "ansatt123";
 
 const salt = randomBytes(16);
-const hash = pbkdf2Sync(PASSWORD, salt, 310000, 32, "sha256");
+const hash = pbkdf2Sync(PASSWORD, salt, 100000, 32, "sha256");
 
-const passwordHash = `pbkdf2-sha256:310000:${salt.toString("hex")}:${hash.toString("hex")}`;
+const passwordHash = `pbkdf2-sha256:100000:${salt.toString("hex")}:${hash.toString("hex")}`;
 
 const sql = `
 INSERT INTO users (
