@@ -125,50 +125,6 @@ export async function createWeeklyPlan(weekStart: string): Promise<WeeklyPlan> {
   return handleResponse<WeeklyPlan>(response);
 }
 
-export async function assignWeeklyTask(data: {
-  planId: number;
-  taskId: string;
-  userId: number;
-}): Promise<WeeklyTaskItem> {
-  const response = await fetch(`${BASE_URL}/weekly-items`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
-  });
-
-  return handleResponse<WeeklyTaskItem>(response);
-}
-
-export async function updateWeeklyTask(
-  itemId: number,
-  data: {
-    userId?: number;
-    description?: string | null;
-  },
-): Promise<WeeklyTaskItem> {
-  const response = await fetch(`${BASE_URL}/weekly-items/${itemId}`, {
-    method: "PATCH",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
-  });
-
-  return handleResponse<WeeklyTaskItem>(response);
-}
-
-export async function deleteWeeklyTask(
-  itemId: number,
-): Promise<{ success: boolean }> {
-  const response = await fetch(`${BASE_URL}/weekly-items/${itemId}`, {
-    method: "DELETE",
-  });
-
-  return handleResponse<{ success: boolean }>(response);
-}
-
 export async function completeWeeklyTask(
   itemId: number,
 ): Promise<WeeklyTaskItem> {

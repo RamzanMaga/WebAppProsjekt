@@ -38,14 +38,6 @@ export const taskRoutes = [
     return controller.getWeeklyPlan(request, params.weekStart);
   }),
 
-  route("/api/tasks/weekly-items", async ({ request }) => {
-    if (request.method !== "POST") {
-      return methodNotAllowed();
-    }
-
-    return controller.assignWeeklyTask(request);
-  }),
-
   route(
     "/api/tasks/weekly-items/:itemId/complete",
     async ({ request, params }) => {
@@ -62,24 +54,6 @@ export const taskRoutes = [
       return controller.completeWeeklyTask(request, itemId);
     },
   ),
-
-  route("/api/tasks/weekly-items/:itemId", async ({ request, params }) => {
-    const itemId = parsePositiveId(params.itemId);
-
-    if (itemId === null) {
-      return invalidIdResponse();
-    }
-
-    if (request.method === "PATCH") {
-      return controller.updateWeeklyTask(request, itemId);
-    }
-
-    if (request.method === "DELETE") {
-      return controller.deleteWeeklyTask(request, itemId);
-    }
-
-    return methodNotAllowed();
-  }),
 
   route(
     "/api/tasks/weekly-plans/:planId/review",

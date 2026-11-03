@@ -8,11 +8,14 @@ export async function createTask(data: typeof tasks.$inferInsert) {
 }
 
 export async function getAllTasks() {
-  return db.select().from(tasks);
+  return db.select().from(tasks).where(eq(tasks.isActive, true));
 }
 
 export async function getTaskById(id: string) {
-  const [task] = await db.select().from(tasks).where(eq(tasks.id, id));
+  const [task] = await db
+    .select()
+    .from(tasks)
+    .where(and(eq(tasks.id, id), eq(tasks.isActive, true)));
 
   return task ?? null;
 }
@@ -27,13 +30,39 @@ export async function updateTask(
     .where(eq(tasks.id, id))
     .returning();
 
-  return task ?? null;
+  if (!task) {
+    return null;
+  }
+
+  if (data.title !== undefined) {
+    await db
+      .update(taskItems)
+      .set({ titles: data.title })
+      .where(eq(taskItems.taskId, id));
+  }
+
+  return task;
 }
-
 export async function deleteTask(id: string) {
-  const [task] = await db.delete(tasks).where(eq(tasks.id, id)).returning();
+  const [existing] = await db
+    .select()
+    .from(tasks)
+    .where(eq(tasks.id, id))
+    .limit(1);
 
-  return task ?? null;
+  if (!existing) {
+    return null;
+  }
+
+  const results = await db.batch([
+    db.delete(taskItems).where(eq(taskItems.taskId, id)),
+
+    db.delete(tasks).where(eq(tasks.id, id)).returning(),
+  ]);
+
+  const deletedTasks = results[1];
+
+  return deletedTasks[0] ?? null;
 }
 
 export async function getWeeklyPlan(floorId: number, weekStart: string) {
@@ -110,20 +139,6 @@ export async function getUserById(userId: number) {
   return user ?? null;
 }
 
-export async function getWeeklyTaskSource(taskId: string) {
-  const [task] = await db
-    .select({
-      id: tasks.id,
-      floorId: tasks.floorId,
-      title: tasks.title,
-      description: tasks.description,
-    })
-    .from(tasks)
-    .where(eq(tasks.id, taskId));
-
-  return task ?? null;
-}
-
 export async function getWeeklyTaskItemById(itemId: number) {
   const [item] = await db
     .select()
@@ -169,31 +184,6 @@ export async function assignWeeklyTask(data: {
   }
 
   return getWeeklyTaskBySource(data.planId, data.taskId);
-}
-
-export async function updateWeeklyTask(
-  itemId: number,
-  data: {
-    userId?: number;
-    description?: string | null;
-  },
-) {
-  const [item] = await db
-    .update(taskItems)
-    .set(data)
-    .where(eq(taskItems.id, itemId))
-    .returning();
-
-  return item ?? null;
-}
-
-export async function deleteWeeklyTask(itemId: number) {
-  const [item] = await db
-    .delete(taskItems)
-    .where(eq(taskItems.id, itemId))
-    .returning();
-
-  return item ?? null;
 }
 
 export async function completeWeeklyTask(itemId: number, studentId: number) {

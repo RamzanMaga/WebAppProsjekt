@@ -190,6 +190,12 @@ export async function deleteTask(request: Request, id: string) {
 
     return Response.json({ success: true });
   } catch (error) {
+    console.error("DELETE TASK ERROR:", error);
+
+    if (error instanceof Error) {
+      console.error("CAUSE:", error.cause);
+    }
+
     return errorResponse(error);
   }
 }
@@ -235,108 +241,6 @@ export async function createWeeklyPlan(request: Request) {
     const plan = await service.createWeeklyPlan(user.floorId, body.weekStart);
 
     return Response.json(plan, { status: 201 });
-  } catch (error) {
-    return errorResponse(error);
-  }
-}
-
-export async function assignWeeklyTask(request: Request) {
-  try {
-    const user = await getAuthenticatedUser(request);
-
-    if (!user) {
-      return unauthorizedResponse();
-    }
-
-    if (user.role !== "student") {
-      return forbiddenResponse();
-    }
-
-    const body = await readJson(request);
-
-    if (
-      !isObject(body) ||
-      typeof body.planId !== "number" ||
-      typeof body.taskId !== "string" ||
-      typeof body.userId !== "number"
-    ) {
-      throw new Error("Ugyldig oppgavefordeling");
-    }
-
-    const item = await service.assignWeeklyTask(user.id, {
-      planId: body.planId,
-      taskId: body.taskId,
-      userId: body.userId,
-    });
-
-    return Response.json(item, { status: 201 });
-  } catch (error) {
-    return errorResponse(error);
-  }
-}
-
-export async function updateWeeklyTask(request: Request, itemId: number) {
-  try {
-    const user = await getAuthenticatedUser(request);
-
-    if (!user) {
-      return unauthorizedResponse();
-    }
-
-    if (user.role !== "student") {
-      return forbiddenResponse();
-    }
-
-    const body = await readJson(request);
-
-    if (!isObject(body)) {
-      throw new Error("Ugyldig oppgavedata");
-    }
-
-    const data: {
-      userId?: number;
-      description?: string | null;
-    } = {};
-
-    if (body.userId !== undefined) {
-      if (typeof body.userId !== "number") {
-        throw new Error("Ugyldig student-ID");
-      }
-
-      data.userId = body.userId;
-    }
-
-    if (body.description !== undefined) {
-      if (body.description !== null && typeof body.description !== "string") {
-        throw new Error("Ugyldig beskrivelse");
-      }
-
-      data.description = body.description;
-    }
-
-    const item = await service.updateWeeklyTask(user.id, itemId, data);
-
-    return Response.json(item);
-  } catch (error) {
-    return errorResponse(error);
-  }
-}
-
-export async function deleteWeeklyTask(request: Request, itemId: number) {
-  try {
-    const user = await getAuthenticatedUser(request);
-
-    if (!user) {
-      return unauthorizedResponse();
-    }
-
-    if (user.role !== "student") {
-      return forbiddenResponse();
-    }
-
-    await service.deleteWeeklyTask(user.id, itemId);
-
-    return Response.json({ success: true });
   } catch (error) {
     return errorResponse(error);
   }

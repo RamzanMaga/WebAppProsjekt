@@ -10,6 +10,7 @@ export const tasks = sqliteTable(
       .$defaultFn(() => crypto.randomUUID()),
 
     title: text("title").notNull(),
+    isActive: integer("is_active", { mode: "boolean" }).notNull().default(true),
 
     floorId: integer("floor_id").references(() => floors.id),
 
