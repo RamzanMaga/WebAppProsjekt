@@ -152,10 +152,32 @@ export async function createWeeklyPlan(floorId: number, weekStart: string) {
     throw new Error("Ingen studenter finnes i denne etasjen");
   }
 
-  const distribution = distributeTasksRandomly(
-    missingTasks,
-    students.map((student) => student.id),
-  );
+  //Randomly deling av tasken
+  const taskCounts = new Map<number, number>();
+
+  for (const student of students) {
+    taskCounts.set(
+      student.id,
+      existingItems.filter((item) => item.userId === student.id).length,
+    );
+  }
+
+  const distribution = missingTasks.map((task) => {
+    const minimum = Math.min(...taskCounts.values());
+
+    const candidates = students.filter(
+      (student) => taskCounts.get(student.id) === minimum,
+    );
+
+    const selected = candidates[Math.floor(Math.random() * candidates.length)];
+
+    taskCounts.set(selected.id, minimum + 1);
+
+    return {
+      task,
+      studentId: selected.id,
+    };
+  });
 
   for (const { task, studentId } of distribution) {
     await repository.assignWeeklyTask({
